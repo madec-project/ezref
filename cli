@@ -11,7 +11,7 @@ var configPath = dataPath + ".json";
 var config     = require(configPath);
 var port       = config.port;
 var host       = "0.0.0.0";
-var log        = console.log //function () {};
+var log        = console.log; //function () {};
 var ssl        = false;
 var silent     = false;
 var requestLogger;
