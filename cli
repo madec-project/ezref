@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+/*jshint node:true,laxcomma:true*/
+/* vim: set ft=javascript: */
+"use strict";
+
+var path       = require('path');
+var httpServer = require('http-server');
+// Get app preferences (port, dataPath)
+var dataPath   = path.resolve(process.argv.slice(2).shift());
+var configPath = dataPath + ".json";
+var config     = require(configPath);
+var port       = config.port;
+var host       = "0.0.0.0";
+var log        = console.log //function () {};
+var ssl        = false;
+var silent     = false;
+var requestLogger;
+// Cache time (max-age) in seconds [3600], e.g. 10 for 10 seconds.
+//                      To disable caching, use -1.
+var cacheTime;
+var showDir    = true;
+var autoIndex  = true;
+// Respond to /robots.txt [User-agent: *\\nDisallow: /]
+var robots;
+// Default file extension if none supplied [none]
+var ext;
+// Fallback proxy if the request cannot be resolved. e.g.: http://someurl.com
+var proxy;
+
+if (!silent) {
+  requestLogger = function(req, res, error) {
+    var date = (new Date()).toUTCString();
+    if (error) {
+      log('[%s] "%s %s" Error (%s): "%s"', date, req.method.red, req.url.red, error.status.toString().red, error.message.red);
+    } else {
+      log('[%s] "%s %s" "%s"', date, req.method.cyan, req.url.cyan, req.headers['user-agent']);
+    }
+  };
+}
+
+if (!port) {
+  throw new Error('No port given to ezref!');
+}
+
+var options = {
+  root: dataPath,
+  cache: cacheTime,
+  showDir: showDir,
+  autoIndex: autoIndex,
+  robots: robots,
+  ext: ext,
+  logFn: requestLogger,
+  proxy: proxy
+};
+
+
+// require('castor-core')(require('./server.js'));
+var server = httpServer.createServer(options);
+server.listen(port, host, function () {
+  var canonicalHost = host === '0.0.0.0' ? '127.0.0.1' : host,
+      protocol      = ssl ? 'https:' : 'http:';
+
+  log('Starting up http-server, serving ' +
+    server.root +
+    (ssl ? (' through' + ' https') : '') +
+    ' on: ' +
+    protocol + '//' + host + ':' + port);
+
+  if (typeof proxy === 'string') {
+    log('Unhandled requests will be served from: ' + proxy);
+  }
+
+  log('Hit CTRL-C to stop the server');
+});

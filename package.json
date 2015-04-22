@@ -1,0 +1,28 @@
+{
+  "name": "ezref",
+  "version": "1.0.0",
+  "description": "A castor-core app to serve static files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madec-project/ezref.git"
+  },
+  "keywords": [
+    "ezvis",
+    "ezmaster",
+    "static",
+    "files"
+  ],
+  "author": "François Parmentier",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/madec-project/ezref/issues"
+  },
+  "homepage": "https://github.com/madec-project/ezref",
+  "dependencies": {
+    "http-server": "^0.8.0"
+  }
+}
