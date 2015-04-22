@@ -15,6 +15,17 @@ $ npm install
 
 ## Run
 
+Create a directory to serve (`data`).
+Create a settings file, besides `data`, named `data.json`.
+Put the port to use in `data.json`:
+
+```json
+{
+    "port": 35000
+}
+```
+
+Run the server:
 ```bash
-$ node ./cli path-to-directory-to-server
+$ node ./cli path-to-directory-to-serve
 ```
