@@ -54,7 +54,6 @@ var options = {
 };
 
 
-// require('castor-core')(require('./server.js'));
 var server = httpServer.createServer(options);
 server.listen(port, host, function () {
   var canonicalHost = host === '0.0.0.0' ? '127.0.0.1' : host,
