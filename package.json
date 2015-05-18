@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A castor-core app to serve static files",
   "main": "index.js",
+  "bin": {
+    "ezref": "./cli"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
