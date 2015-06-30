@@ -59,7 +59,8 @@ var options = {
   robots: robots,
   ext: ext,
   logFn: requestLogger,
-  proxy: proxy
+  proxy: proxy,
+  cors: true
 };
 
 
