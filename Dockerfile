@@ -1,15 +1,15 @@
 FROM node:4.4.0
 
 # Copy the local code source
-# and tell docker this folder 
+# and tell docker this folder
 # must be used when running a
-# container. 
+# container.
 COPY . /app
 WORKDIR /app
 
-# Run the test to make sure 
+# Run the test to make sure
 # the docker image will be ok.
-# If the test fails, the image 
+# If the test fails, the image
 # will not be built
 RUN rm -rf ./node_modules && \
     npm install --production && \
@@ -24,5 +24,5 @@ RUN ln -s /app/data.json /opt/ezmaster/config/config.json
 RUN ln -s /app/data /opt/ezmaster/data
 
 # run the application
-CMD ["/app/cli", "/app/data"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 EXPOSE 3000

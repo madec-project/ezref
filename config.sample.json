@@ -1,0 +1,15 @@
+{
+	"cache": 45000,
+    "showDir": true,
+    "autoIndex": true,
+    "defaultExt": "txt",
+    "gzip": false,
+	"contentType" : "text/plain",
+	"cors" : false,
+	"corsHeaders" : "",
+	"https" : false,
+	"robots" : true,
+	"proxy" : null,
+	"ext" :  "txt"
+}
+
