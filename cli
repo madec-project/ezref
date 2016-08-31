@@ -14,27 +14,16 @@ if (process.argv.length < 3) {
 
 var path       = require('path');
 var httpServer = require('http-server');
+var colors     = require('colors');
 // Get app preferences (port, dataPath)
 var dataPath   = path.resolve(process.argv.slice(2).shift());
 var configPath = dataPath + ".json";
 var config     = require(configPath);
-var port       = config.port;
-var host       = "0.0.0.0";
+var host       = process.env.EZMASTER_PUBLIC_DOMAIN || "0.0.0.0";
+
 var log        = console.log; //function () {};
-var ssl        = false;
 var silent     = false;
 var requestLogger;
-// Cache time (max-age) in seconds [3600], e.g. 10 for 10 seconds.
-//                      To disable caching, use -1.
-var cacheTime;
-var showDir    = true;
-var autoIndex  = true;
-// Respond to /robots.txt [User-agent: *\\nDisallow: /]
-var robots;
-// Default file extension if none supplied [none]
-var ext;
-// Fallback proxy if the request cannot be resolved. e.g.: http://someurl.com
-var proxy;
 
 if (!silent) {
   requestLogger = function(req, res, error) {
@@ -47,37 +36,53 @@ if (!silent) {
   };
 }
 
-if (!port) {
+config.cache = Number(config.cache || 3600);
+config.showDir = String(config.showDir);
+config.autoIndex = String(config.autoIndex);
+config.gzip = Boolean(config.gzip || true);
+config.contentType = String(config.contentType || 'application/octet-stream');
+config.port = Number(process.env.PORT || 3000);
+config.root = String(dataPath);
+config.host = String(host);
+config.logFn = requestLogger;
+config.cors = Boolean(config.cors || true);
+config.corsHeaders = undefined; // String('xxx yyy zzz')
+config.https = Boolean(config.https || false);
+config.robots = Boolean(config.robots || false);
+config.proxy = undefined; // String('http://....')
+config.ext = String(config.ext || 'html');
+
+log(config);
+
+
+if (!config.port) {
   throw new Error('No port given to ezref!');
 }
 
-var options = {
-  root: dataPath,
-  cache: cacheTime,
-  showDir: showDir,
-  autoIndex: autoIndex,
-  robots: robots,
-  ext: ext,
-  logFn: requestLogger,
-  proxy: proxy,
-  cors: true
-};
-
-
-var server = httpServer.createServer(options);
-server.listen(port, host, function () {
-  var canonicalHost = host === '0.0.0.0' ? '127.0.0.1' : host,
-      protocol      = ssl ? 'https:' : 'http:';
+var server = httpServer.createServer(config);
+server.listen(config.port, host, function () {
+  var hostname = process.env.EZMASTER_PUBLIC_DOMAIN
+  ? process.env.EZMASTER_PUBLIC_DOMAIN
+  : host + ':' + config.port;
+  var protocol      = config.https ? 'https:' : 'http:';
 
   log('Starting up http-server, serving ' +
     server.root +
-    (ssl ? (' through' + ' https') : '') +
+    (config.https ? (' through' + ' https') : '') +
     ' on: ' +
-    protocol + '//' + host + ':' + port);
-
-  if (typeof proxy === 'string') {
-    log('Unhandled requests will be served from: ' + proxy);
-  }
+    protocol + '//' + hostname);
 
   log('Hit CTRL-C to stop the server');
+});
+
+process.on('SIGINT', function() {
+  log('Server is killed. Caught SIGINT exiting');
+  process.exit(1);
+});
+
+process.on('SIGTERM', function() {
+  server.close(function() {
+    log('Server is stopped. Caught SIGTERM exiting');
+    process.exit(1);
+  });
 });
