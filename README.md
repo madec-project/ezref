@@ -17,11 +17,22 @@ $ npm install
 
 Create a directory to serve (`data`).
 Create a settings file, besides `data`, named `data.json`.
-Put the port to use in `data.json`:
+Put the port to use in environement variable named PORT (default : 3000)
 
 ```json
 {
-    "port": 35000
+	"cache": 45000,
+    "showDir": true,
+    "autoIndex": true,
+    "defaultExt": "txt",
+    "gzip": false,
+	"contentType" : "text/plain",
+	"cors" : false,
+	"corsHeaders" : "",
+	"https" : false,
+	"robots" : false,
+	"proxy" : null,
+	"ext" :  "txt"
 }
 ```
 
