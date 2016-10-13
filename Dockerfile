@@ -1,4 +1,4 @@
-FROM node:4.4.0
+FROM node:argon
 
 # Copy the local code source
 # and tell docker this folder
@@ -7,21 +7,22 @@ FROM node:4.4.0
 COPY . /app
 WORKDIR /app
 
-# Run the test to make sure
-# the docker image will be ok.
-# If the test fails, the image
-# will not be built
-RUN rm -rf ./node_modules && \
-    npm install --production && \
-    npm cache clean
 
-# data folder is a volume because it will
-# contains the user's data files (ex: CSV)
-VOLUME /app/data
+# npm dependencies before addinq source code
+COPY ./package.json /app
+RUN npm install --production -q && npm cache clean
+COPY . /app
 
-RUN mkdir -p /opt/ezmaster/config/
-RUN ln -s /app/data.json /opt/ezmaster/config/config.json
-RUN ln -s /app/data /opt/ezmaster/data
+# ezmasterization of ezark
+# see https://github.com/Inist-CNRS/ezmaster
+RUN echo '{ \
+  "httpPort": 3000, \
+  "configPath": "/app/data.json", \
+  "dataPath": "/app/data/" \
+}' > /etc/ezmaster.json
+
+# load config sample
+RUN cp -f /app/config.sample.json /app/data.json
 
 # run the application
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
